@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import BoxLabel from "./box-label";
 
 interface boxProperties {
+  id: string;
   title: string;
   type: BlockType;
   markdown: string;
@@ -29,7 +30,7 @@ const TypeToBorderColor = {
   [BlockType.ERROR]: "border-danger",
 };
 
-const box: React.FC<boxProperties> = ({ title, markdown, type }) => {
+const box: React.FC<boxProperties> = ({ title, markdown, type, id }) => {
   const bgColorTransparent = TypeToBackgroundTransparentColor[type];
   const borderColor = TypeToBorderColor[type];
 
@@ -41,7 +42,7 @@ const box: React.FC<boxProperties> = ({ title, markdown, type }) => {
         borderColor,
       )}
     >
-      <div className="fixed -translate-x-1 -translate-y-4">
+      <div id={id} className="fixed -translate-x-1 -translate-y-4">
         <BoxLabel title={title} type={type} />
       </div>
       <div className="pt-3">

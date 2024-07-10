@@ -4,6 +4,7 @@ import React from "react";
 
 import { RouterOutput } from "@/server/api/root";
 import { formatDate } from "@/utils/date";
+import { nameToInternal } from "@/utils/name-to-internal";
 
 import Box from "./box";
 
@@ -21,10 +22,15 @@ const sheetPage: React.FC<sheetPageProperties> = ({
   page,
 }) => {
   return (
-    <div className="m-4 flex h-[1485px] w-[1050px] flex-col overflow-hidden rounded-md border-2 border-secondary bg-secondary/5 p-8 pt-3 backdrop-blur-sm">
+    <div
+      id={`${nameToInternal(page.title)}`}
+      className="m-4 flex h-[1485px] w-[1050px] flex-col overflow-hidden rounded-md border-2 border-secondary bg-secondary/5 p-8 pt-3 backdrop-blur-sm"
+    >
       <div className="flex w-full flex-row justify-between">
         <p></p>
-        <h1>{title}</h1>
+        <a href="#top">
+          <h1>{title}</h1>
+        </a>
         <p></p>
       </div>
       <div className="flex w-full flex-row justify-between">
@@ -36,10 +42,11 @@ const sheetPage: React.FC<sheetPageProperties> = ({
       </div>
       <div className="mr-3 h-[1285px]">
         {/* 2 columns */}
-        <div className="flex h-full w-full flex-col flex-wrap gap-3 pt-3">
+        <div className="flex h-full w-full flex-col flex-wrap gap-5 pt-3">
           {/* <Box title="Title 1" /> */}
           {page.blocks.map((box) => (
             <Box
+              id={`${nameToInternal(page.title)}:${nameToInternal(box.title)}`}
               key={box.id}
               title={box.title}
               markdown={box.markdown}

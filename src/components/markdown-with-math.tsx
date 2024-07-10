@@ -1,4 +1,5 @@
 // MarkdownWithMath.tsx
+import "./markdown.css";
 import "katex/dist/katex.min.css";
 
 import React from "react";
@@ -14,7 +15,11 @@ const MarkdownWithMath: React.FC<MarkdownWithMathProperties> = ({
   content,
 }) => {
   return (
-    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+    <ReactMarkdown
+      className="markdown"
+      remarkPlugins={[remarkMath]}
+      rehypePlugins={[rehypeKatex]}
+    >
       {content}
     </ReactMarkdown>
   );

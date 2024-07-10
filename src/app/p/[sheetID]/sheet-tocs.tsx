@@ -2,6 +2,7 @@ import React from "react";
 
 import { RouterOutput } from "@/server/api/root";
 import { formatDate } from "@/utils/date";
+import { nameToInternal } from "@/utils/name-to-internal";
 
 import BoxLabel from "./box-label";
 
@@ -33,18 +34,30 @@ const sheetTocs: React.FC<sheetTocsProperties> = ({
       <div className="flex h-[1285px] flex-col items-baseline gap-4">
         {pages.map((page, index) => (
           <div key={page.id} className="flex w-full flex-row items-center">
-            <h3 className="my-2 w-48 rounded-md bg-primary p-1 px-2 text-xl text-background">
-              {page.title}
-            </h3>
-            <h3 className="m-1 my-2 w-16 rounded-md border-2 border-primary p-1 px-2 text-right text-xl text-primary">
-              {index + 1}
-            </h3>
+            <a
+              href={`#${nameToInternal(page.title)}`}
+              className="flex flex-row items-center"
+            >
+              <h3 className="my-2 w-48 overflow-hidden rounded-l-md border-2 border-primary bg-primary p-1 px-2 text-xl text-background">
+                {page.title}
+              </h3>
+              <h3 className="w-16 rounded-r-md border-2 border-secondary bg-secondary/30 p-1 px-2 text-right text-xl text-primary">
+                {index + 1}
+              </h3>
+            </a>
             <div className="m-1 h-full border border-secondary"></div>
             <div className="flex w-full flex-row flex-wrap">
               {page.blocks.map((box) => (
-                <div key={box.id} className="m-1">
-                  <BoxLabel title={box.title} type={box.type} />
-                </div>
+                <a
+                  key={box.id}
+                  href={`#${nameToInternal(page.title)}:${nameToInternal(
+                    box.title,
+                  )}`}
+                >
+                  <div className="m-1 cursor-pointer">
+                    <BoxLabel title={box.title} type={box.type} />
+                  </div>
+                </a>
               ))}
             </div>
             <div className="m-1 h-full border border-secondary"></div>

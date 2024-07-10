@@ -1,6 +1,10 @@
 "use client";
 
-import { faDownload, faUpload } from "@fortawesome/free-solid-svg-icons";
+import {
+  faDownload,
+  faPersonChalkboard,
+  faUpload,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -35,11 +39,14 @@ const sheet: React.FC<sheetProperties> = ({ sheet }) => {
   }
 
   return (
-    <div className="mt-10 flex flex-col items-center justify-center py-2 text-primary">
+    <div
+      id="top"
+      className="mt-10 flex flex-col items-center justify-center py-2 text-primary"
+    >
       <Header title={sheet.title} id={sheet.id} />
       last updated: {dayjs(sheet.updatedAt).fromNow()}
       <div className="flex flex-row">
-        <button onClick={void importMarkdown()}>
+        <button onClick={async () => importMarkdown()}>
           <FontAwesomeIcon
             className="m-1 rounded-md border-2 border-primary p-1"
             icon={faUpload}
@@ -49,6 +56,12 @@ const sheet: React.FC<sheetProperties> = ({ sheet }) => {
           <FontAwesomeIcon
             className="m-1 rounded-md border-2 border-primary p-1"
             icon={faDownload}
+          />
+        </button>
+        <button>
+          <FontAwesomeIcon
+            className="m-1 rounded-md border-2 border-primary p-1"
+            icon={faPersonChalkboard}
           />
         </button>
       </div>

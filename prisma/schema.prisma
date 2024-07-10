@@ -87,6 +87,7 @@ model Page {
 
 model Block {
   id        String    @id @default(cuid())
+  index     Float     @default(0)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   type      BlockType

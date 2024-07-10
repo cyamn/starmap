@@ -38,6 +38,9 @@ export const sheetsRouter = createTRPCRouter({
                   type: true,
                   markdown: true,
                 },
+                orderBy: {
+                  index: "asc",
+                },
               },
             },
           },
@@ -143,6 +146,16 @@ export const sheetsRouter = createTRPCRouter({
         },
       });
 
+      // clean markdown
+      let markdown = input.markdown;
+      // 1. we only allow $...$ as inline math
+      markdown = markdown.replaceAll('\\(', "$");
+      markdown = markdown.replaceAll('\\)', "$");
+
+      // 2. we only allow $$...$$ as block math
+      markdown = markdown.replaceAll('\\[', "$$");
+      markdown = markdown.replaceAll('\\]', "$$");
+
       // for each # create new page with in for each ## create new block
       const pages: {
         title: string;
@@ -150,9 +163,11 @@ export const sheetsRouter = createTRPCRouter({
           title: string;
           type: BlockType;
           markdown: string;
+          index: number;
         }[];
       }[] = [];
-      for (const [, line] of input.markdown.split("\n").entries()) {
+      let blockIndex = 0;
+      for (const [, line] of markdown.split("\n").entries()) {
         if (line.startsWith("##")) {
           let title = line.replace("##", "").trim();
 
@@ -192,8 +207,10 @@ export const sheetsRouter = createTRPCRouter({
             type,
             title,
             markdown: "",
+            index: blockIndex++,
           });
         } else if (line.startsWith("#")) {
+          blockIndex = 0;
           pages.push({
             title: line.replace("#", "").trim(),
             blocks: [],
