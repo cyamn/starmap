@@ -30,6 +30,7 @@ export const sheetsRouter = createTRPCRouter({
           pages: {
             select: {
               id: true,
+              index: true,
               title: true,
               blocks: {
                 select: {

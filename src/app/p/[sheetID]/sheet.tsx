@@ -8,7 +8,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { RouterOutput } from "@/server/api/root";
 import { api } from "@/utils/api";
@@ -17,21 +17,57 @@ import { handleImport } from "@/utils/import";
 import Footer from "./footer";
 import Header from "./header";
 import SheetPage from "./sheet-page";
+import SheetSidenav from "./sheet-sidenav";
 import SheetTocs from "./sheet-tocs";
 
 dayjs.extend(relativeTime);
 
-interface sheetProperties {
+interface SheetProperties {
   sheet: NonNullable<RouterOutput["sheets"]["get"]>;
 }
 
-const sheet: React.FC<sheetProperties> = ({ sheet }) => {
+const Sheet: React.FC<SheetProperties> = ({ sheet }) => {
   const context = api.useUtils();
   const { mutate: importMd } = api.sheets.importFromMarkdown.useMutation({
     onSuccess: () => {
       void context.sheets.get.invalidate({ id: sheet.id });
     },
   });
+
+  const [activePage, setActivePage] = useState(sheet.pages[0]?.index || 0);
+  const pageReferences = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight / 2; // Middle of the viewport
+      const offsets = pageReferences.current.map(
+        (reference) => reference?.offsetTop || 0,
+      );
+
+      for (let index = offsets.length - 1; index >= 0; index--) {
+        if (scrollPosition >= offsets[index]) {
+          setActivePage(sheet.pages[index]?.index ?? 0);
+          console.log(sheet.pages[index]?.index ?? 0);
+          break;
+        }
+      }
+    };
+
+    const debouncedHandleScroll = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleScroll, 100);
+    };
+
+    let timeoutId: NodeJS.Timeout;
+    window.addEventListener("scroll", debouncedHandleScroll);
+    handleScroll(); // Initial call to set the correct active page
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("scroll", debouncedHandleScroll);
+    };
+  }, [sheet.pages]);
+
   async function importMarkdown() {
     const file = await handleImport(false, [".md"]);
     if (file?.[0] === undefined) return;
@@ -46,7 +82,7 @@ const sheet: React.FC<sheetProperties> = ({ sheet }) => {
       <Header title={sheet.title} id={sheet.id} />
       last updated: {dayjs(sheet.updatedAt).fromNow()}
       <div className="flex flex-row">
-        <button onClick={async () => importMarkdown()}>
+        <button onClick={importMarkdown}>
           <FontAwesomeIcon
             className="m-1 rounded-md border-2 border-primary p-1"
             icon={faUpload}
@@ -65,23 +101,30 @@ const sheet: React.FC<sheetProperties> = ({ sheet }) => {
           />
         </button>
       </div>
-      <SheetTocs
-        pages={sheet.pages}
-        title={sheet.title}
-        lastUpdated={sheet.updatedAt}
-      />
-      {sheet.pages.map((page, index) => (
-        <SheetPage
-          key={page.id}
+      <div ref={(element) => (pageReferences.current[0] = element)}>
+        <SheetTocs
+          pages={sheet.pages}
           title={sheet.title}
-          page={page}
           lastUpdated={sheet.updatedAt}
-          index={index}
         />
+      </div>
+      <SheetSidenav pages={sheet.pages} activePage={activePage} />
+      {sheet.pages.map((page, index) => (
+        <div
+          ref={(element) => (pageReferences.current[index + 1] = element)}
+          key={page.id}
+        >
+          <SheetPage
+            title={sheet.title}
+            page={page}
+            lastUpdated={sheet.updatedAt}
+            index={index}
+          />
+        </div>
       ))}
       <Footer id={sheet.id} pages={sheet.pages.length} />
     </div>
   );
 };
 
-export default sheet;
+export default Sheet;

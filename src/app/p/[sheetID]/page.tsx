@@ -33,7 +33,7 @@ const Home = async ({ params }: PageProperties) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <DottedBackground />
-      <div className="h-full overflow-auto">
+      <div className="overflow-auto">
         <Sheet sheet={sheet} />
       </div>
     </>
