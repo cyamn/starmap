@@ -3,6 +3,7 @@
 import {
   faDownload,
   faPersonChalkboard,
+  faPrint,
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -77,29 +78,42 @@ const Sheet: React.FC<SheetProperties> = ({ sheet }) => {
   return (
     <div
       id="top"
-      className="mt-10 flex flex-col items-center justify-center py-2 text-primary"
+      className=" flex flex-col items-center justify-center py-2 text-primary print:py-0"
     >
-      <Header title={sheet.title} id={sheet.id} />
-      last updated: {dayjs(sheet.updatedAt).fromNow()}
-      <div className="flex flex-row">
-        <button onClick={importMarkdown}>
-          <FontAwesomeIcon
-            className="m-1 rounded-md border-2 border-primary p-1"
-            icon={faUpload}
-          />
-        </button>
-        <button>
-          <FontAwesomeIcon
-            className="m-1 rounded-md border-2 border-primary p-1"
-            icon={faDownload}
-          />
-        </button>
-        <button>
-          <FontAwesomeIcon
-            className="m-1 rounded-md border-2 border-primary p-1"
-            icon={faPersonChalkboard}
-          />
-        </button>
+      <div className="mt-10 flex flex-col items-center justify-center print:hidden">
+        <Header title={sheet.title} id={sheet.id} />
+        last updated: {dayjs(sheet.updatedAt).fromNow()}
+        <div className="flex flex-row">
+          <button onClick={importMarkdown}>
+            <FontAwesomeIcon
+              className="m-1 rounded-md border-2 border-primary p-1"
+              icon={faUpload}
+            />
+          </button>
+          <button>
+            <FontAwesomeIcon
+              className="m-1 rounded-md border-2 border-primary p-1"
+              icon={faDownload}
+            />
+          </button>
+          <button
+            onClick={() => {
+              window.print();
+            }}
+          >
+            <FontAwesomeIcon
+              className="m-1 rounded-md border-2 border-primary p-1"
+              icon={faPrint}
+            />
+          </button>
+          <button>
+            <FontAwesomeIcon
+              className="m-1 rounded-md border-2 border-primary p-1"
+              icon={faPersonChalkboard}
+            />
+          </button>
+        </div>
+        <SheetSidenav pages={sheet.pages} activePage={activePage} />
       </div>
       <div ref={(element) => (pageReferences.current[0] = element)}>
         <SheetTocs
@@ -108,7 +122,6 @@ const Sheet: React.FC<SheetProperties> = ({ sheet }) => {
           lastUpdated={sheet.updatedAt}
         />
       </div>
-      <SheetSidenav pages={sheet.pages} activePage={activePage} />
       {sheet.pages.map((page, index) => (
         <div
           ref={(element) => (pageReferences.current[index + 1] = element)}

@@ -38,7 +38,7 @@ const boxLabel: React.FC<boxLabelProperties> = ({ title, type }) => {
   return (
     <h3
       className={cn(
-        "border-md rounded-md bg-primary px-1 text-base text-background",
+        "border-md rounded-md bg-primary px-1 text-base text-background print:text-sm",
         bgColor,
       )}
     >

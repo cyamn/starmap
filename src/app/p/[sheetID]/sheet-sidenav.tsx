@@ -1,6 +1,7 @@
 import React from "react";
 
 import { RouterOutput } from "@/server/api/root";
+import { nameToInternal } from "@/utils/name-to-internal";
 
 interface sheetSidenavProperties {
   pages: NonNullable<RouterOutput["sheets"]["get"]>["pages"];
@@ -13,11 +14,11 @@ const sheetSidenav: React.FC<sheetSidenavProperties> = ({
 }) => {
   if (activePage === 0) return null;
   return (
-    <div className="fixed left-0  top-0 ml-4 flex h-full flex-col justify-center">
+    <div className="fixed left-0  top-0 ml-4 flex h-full flex-col justify-center print:hidden">
       {pages.map((page) => (
         <a
           key={page.id}
-          href={`#${page.title}`}
+          href={`#${nameToInternal(page.title)}`}
           className="flex flex-row items-center"
         >
           <NavTitle title={page.title} active={page.index + 1 === activePage} />

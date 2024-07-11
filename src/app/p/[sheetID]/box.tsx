@@ -37,7 +37,7 @@ const box: React.FC<boxProperties> = ({ title, markdown, type, id }) => {
   return (
     <div
       className={cn(
-        "text-md w-1/2 rounded-md border-2 p-1 backdrop-blur-sm",
+        "text-md w-1/2 rounded-md border-2 p-1 backdrop-blur-sm print:text-xs",
         bgColorTransparent,
         borderColor,
       )}

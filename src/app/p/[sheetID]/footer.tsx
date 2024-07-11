@@ -18,7 +18,7 @@ const footer: React.FC<footerProperties> = ({ id, pages }) => {
   });
   return (
     <button
-      className="m-5 rounded-md bg-primary p-2 text-2xl text-background"
+      className="m-5 rounded-md bg-primary p-2 text-2xl text-background print:hidden"
       onClick={() => {
         mutate({
           sheetID: id,
