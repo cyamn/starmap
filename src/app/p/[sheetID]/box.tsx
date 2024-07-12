@@ -29,15 +29,13 @@ const TypeToBorderColor = {
   [BlockType.WARNING]: "border-warning",
   [BlockType.ERROR]: "border-danger",
 };
-
 const box: React.FC<boxProperties> = ({ title, markdown, type, id }) => {
   const bgColorTransparent = TypeToBackgroundTransparentColor[type];
   const borderColor = TypeToBorderColor[type];
-
   return (
     <div
       className={cn(
-        "text-md w-1/2 rounded-md border-2 p-1 backdrop-blur-sm print:text-xs",
+        "text-md w-full rounded-md border-2 p-1 backdrop-blur-sm print:text-xs",
         bgColorTransparent,
         borderColor,
       )}

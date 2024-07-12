@@ -38,6 +38,7 @@ export const sheetsRouter = createTRPCRouter({
                   id: true,
                   type: true,
                   markdown: true,
+                  index: true,
                 },
                 orderBy: {
                   index: "asc",
@@ -245,6 +246,7 @@ export const sheetsRouter = createTRPCRouter({
             pageId: pageIDs[index]!,
             type: block.type,
             markdown: block.markdown,
+            index: block.index,
           };
         });
       });

@@ -1,18 +1,18 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 
 import { RouterOutput } from "@/server/api/root";
 import { formatDate } from "@/utils/date";
 import { nameToInternal } from "@/utils/name-to-internal";
 
-import Box from "./box";
+import BoxContextMenu from "./box-context-menu";
+import CreateBoxButton from "./create-box-button";
 
 interface sheetPageProperties {
   title: string;
   lastUpdated: Date;
   index: number;
   page: NonNullable<RouterOutput["sheets"]["get"]>["pages"][0];
+  setDialogComponent: React.Dispatch<React.SetStateAction<React.ReactNode>>;
 }
 
 const sheetPage: React.FC<sheetPageProperties> = ({
@@ -20,6 +20,7 @@ const sheetPage: React.FC<sheetPageProperties> = ({
   lastUpdated,
   index,
   page,
+  setDialogComponent,
 }) => {
   return (
     <div
@@ -45,17 +46,21 @@ const sheetPage: React.FC<sheetPageProperties> = ({
         <div className="flex h-full w-full flex-col flex-wrap gap-5 pt-3">
           {/* <Box title="Title 1" /> */}
           {page.blocks.map((box) => (
-            <Box
+            <BoxContextMenu
               id={`${nameToInternal(page.title)}:${nameToInternal(box.title)}`}
+              uuid={box.id}
               key={box.id}
               title={box.title}
               markdown={box.markdown}
               type={box.type}
+              setDialogComponent={setDialogComponent}
             />
           ))}
-          <button className="rounded-xl bg-primary/5 text-2xl">
-            <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon>
-          </button>
+          <CreateBoxButton
+            setDialogComponent={setDialogComponent}
+            pageID={page.id}
+            boxes={page.blocks.length}
+          />
         </div>
       </div>
       <div className="flex w-full flex-row justify-between">

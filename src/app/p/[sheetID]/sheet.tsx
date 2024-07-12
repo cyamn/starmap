@@ -35,6 +35,8 @@ const Sheet: React.FC<SheetProperties> = ({ sheet }) => {
     },
   });
 
+  const [dialogComponent, setDialogComponent] = useState<React.ReactNode>(null);
+
   const [activePage, setActivePage] = useState(sheet.pages[0]?.index || 0);
   const pageReferences = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -132,10 +134,16 @@ const Sheet: React.FC<SheetProperties> = ({ sheet }) => {
             page={page}
             lastUpdated={sheet.updatedAt}
             index={index}
+            setDialogComponent={setDialogComponent}
           />
         </div>
       ))}
       <Footer id={sheet.id} pages={sheet.pages.length} />
+      {dialogComponent !== null && (
+        <div className="fixed left-0 top-0 h-screen w-screen p-8 backdrop-blur-sm">
+          {dialogComponent}
+        </div>
+      )}
     </div>
   );
 };

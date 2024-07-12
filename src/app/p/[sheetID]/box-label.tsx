@@ -16,7 +16,7 @@ interface boxLabelProperties {
   type: BlockType;
 }
 
-const TypeToBackgroundColor = {
+export const TypeToBackgroundColor = {
   [BlockType.DEFAULT]: "bg-primary",
   [BlockType.INFO]: "bg-info",
   [BlockType.HINT]: "bg-success",
@@ -24,7 +24,7 @@ const TypeToBackgroundColor = {
   [BlockType.ERROR]: "bg-danger",
 };
 
-const TypeToIcon = {
+export const TypeToIcon = {
   [BlockType.DEFAULT]: faCube,
   [BlockType.INFO]: faCircleInfo,
   [BlockType.HINT]: faEnvira,
