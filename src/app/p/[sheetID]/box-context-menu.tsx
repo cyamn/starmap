@@ -20,6 +20,7 @@ interface boxProperties {
   type: BlockType;
   markdown: string;
   setDialogComponent: React.Dispatch<React.SetStateAction<React.ReactNode>>;
+  sheetID: string;
 }
 
 const box: React.FC<boxProperties> = ({
@@ -29,34 +30,35 @@ const box: React.FC<boxProperties> = ({
   id,
   uuid,
   setDialogComponent,
+  sheetID,
 }) => {
   function closeDialog() {
     setDialogComponent(null);
   }
 
+  function openEditor() {
+    setDialogComponent(
+      <BoxEditor
+        block={{
+          id: uuid,
+          title,
+          markdown,
+          type,
+        }}
+        closeDialog={closeDialog}
+        sheetID={sheetID}
+      />,
+    );
+  }
+
   return (
     <>
       <ContextMenu>
-        <ContextMenuTrigger className="w-1/2">
+        <ContextMenuTrigger className="w-1/2" onDoubleClick={openEditor}>
           <Box title={title} markdown={markdown} type={type} id={id} />
         </ContextMenuTrigger>
         <ContextMenuContent className="w-fit border-2 border-primary bg-background/75 text-primary backdrop-blur">
-          <ContextMenuItem
-            className="cursor-pointer"
-            onClick={() => {
-              setDialogComponent(
-                <BoxEditor
-                  block={{
-                    id: uuid,
-                    title,
-                    markdown,
-                    type,
-                  }}
-                  closeDialog={closeDialog}
-                />,
-              );
-            }}
-          >
+          <ContextMenuItem className="cursor-pointer" onClick={openEditor}>
             <FontAwesomeIcon icon={faPen} className="mr-2" />
             Edit
           </ContextMenuItem>

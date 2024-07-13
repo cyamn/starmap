@@ -80,4 +80,34 @@ export const blocksRouter = createTRPCRouter({
 
       return updatedBlock;
     }),
+
+  delete: publicProcedure
+    .meta({
+      openapi: {
+        description: "Delete a block",
+        tags: ["block"],
+        method: "DELETE",
+        path: "/block/:id",
+      },
+    })
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const block = await ctx.prisma.block.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!block) {
+        throw new NotFoundError("Block");
+      }
+
+      await ctx.prisma.block.delete({
+        where: {
+          id: block.id,
+        },
+      });
+
+      return block;
+    }),
 });

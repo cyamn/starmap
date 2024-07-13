@@ -18,12 +18,14 @@ import {
 import { cn } from "@/lib/utils";
 import { RouterOutput } from "@/server/api/root";
 import { api } from "@/utils/api";
+import { normalizeMarkdown } from "@/utils/normalize-markdown";
 
 import Box from "./box";
 
 interface boxEditorProperties {
   block: NonNullable<RouterOutput["sheets"]["get"]>["pages"][0]["blocks"][0];
   closeDialog: () => void;
+  sheetID: string;
 }
 
 const TypeToColor = {
@@ -34,7 +36,11 @@ const TypeToColor = {
   [BlockType.ERROR]: "text-danger",
 };
 
-const boxEditor: React.FC<boxEditorProperties> = ({ block, closeDialog }) => {
+const boxEditor: React.FC<boxEditorProperties> = ({
+  block,
+  closeDialog,
+  sheetID,
+}) => {
   const localStorageUUID = "block-editor-" + block.id;
 
   const [title, setTitle] = useLocalStorage(
@@ -54,7 +60,7 @@ const boxEditor: React.FC<boxEditorProperties> = ({ block, closeDialog }) => {
 
   const { mutate: updateBlock } = api.blocks.update.useMutation({
     onSuccess: () => {
-      // invalidate sheet
+      void context.sheets.get.invalidate({ id: sheetID });
       discardDialog();
     },
   });
@@ -76,7 +82,6 @@ const boxEditor: React.FC<boxEditorProperties> = ({ block, closeDialog }) => {
     localStorage.removeItem(localStorageUUID + "-markdown");
     localStorage.removeItem(localStorageUUID + "-block");
     closeDialog();
-    window.location.reload();
   }
 
   return (
@@ -124,7 +129,7 @@ const boxEditor: React.FC<boxEditorProperties> = ({ block, closeDialog }) => {
             id=""
             value={markdown}
             onChange={(event) => {
-              setMarkdown(event.target.value);
+              setMarkdown(normalizeMarkdown(event.target.value));
             }}
           />
         </div>

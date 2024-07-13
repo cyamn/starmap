@@ -13,6 +13,7 @@ interface sheetPageProperties {
   index: number;
   page: NonNullable<RouterOutput["sheets"]["get"]>["pages"][0];
   setDialogComponent: React.Dispatch<React.SetStateAction<React.ReactNode>>;
+  sheetID: string;
 }
 
 const sheetPage: React.FC<sheetPageProperties> = ({
@@ -21,6 +22,7 @@ const sheetPage: React.FC<sheetPageProperties> = ({
   index,
   page,
   setDialogComponent,
+  sheetID,
 }) => {
   return (
     <div
@@ -54,12 +56,14 @@ const sheetPage: React.FC<sheetPageProperties> = ({
               markdown={box.markdown}
               type={box.type}
               setDialogComponent={setDialogComponent}
+              sheetID={sheetID}
             />
           ))}
           <CreateBoxButton
             setDialogComponent={setDialogComponent}
             pageID={page.id}
             boxes={page.blocks.length}
+            sheetID={sheetID}
           />
         </div>
       </div>

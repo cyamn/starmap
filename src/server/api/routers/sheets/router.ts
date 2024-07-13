@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { createTRPCRouter } from "@/server/api/trpc";
 import { publicProcedure } from "@/server/api/trpc";
+import { normalizeMarkdown } from "@/utils/normalize-markdown";
 
 import { NotFoundError } from "../shared/errors";
 
@@ -149,14 +150,8 @@ export const sheetsRouter = createTRPCRouter({
       });
 
       // clean markdown
-      let markdown = input.markdown;
-      // 1. we only allow $...$ as inline math
-      markdown = markdown.replaceAll('\\(', "$");
-      markdown = markdown.replaceAll('\\)', "$");
+      const markdown = normalizeMarkdown(input.markdown);
 
-      // 2. we only allow $$...$$ as block math
-      markdown = markdown.replaceAll('\\[', "$$");
-      markdown = markdown.replaceAll('\\]', "$$");
 
       // for each # create new page with in for each ## create new block
       const pages: {
@@ -256,5 +251,88 @@ export const sheetsRouter = createTRPCRouter({
       });
 
       return sheet;
+    }),
+
+
+  exportToMarkdown: publicProcedure
+    .meta({
+      openapi: {
+        description: "Export a sheet to markdown",
+        tags: ["sheet"],
+        method: "GET",
+        path: "/sheet/export/:id",
+      },
+    })
+    .input(z.object({ id: z.string() }))
+    .output(z.object({ markdown: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const sheet = await ctx.prisma.sheet.findUnique({
+        where: {
+          id: input.id,
+        },
+        select: {
+          title: true,
+          pages: {
+            select: {
+              title: true,
+              blocks: {
+                select: {
+                  title: true,
+                  markdown: true,
+                  type: true,
+                },
+                orderBy: {
+                  index: "asc",
+                },
+              },
+            },
+            orderBy: {
+              index: "asc",
+            },
+          },
+        },
+      });
+
+      if (sheet === undefined || sheet === null) {
+        throw new NotFoundError("Sheet");
+      }
+
+      let markdown = "";
+
+      for (const page of sheet.pages) {
+        markdown += `# ${page.title}\n\n`;
+
+        for (const block of page.blocks) {
+          let type = "";
+          switch (block.type) {
+            case BlockType.INFO: {
+              type = ".";
+              break;
+            }
+            case BlockType.HINT: {
+              type = "?";
+              break;
+            }
+            case BlockType.WARNING: {
+              type = "!";
+              break;
+            }
+            case BlockType.ERROR: {
+              type = "$";
+              break;
+            }
+            default: {
+              type = "";
+              break;
+            }
+          }
+
+          markdown += `## ${block.title}${type}\n${block.markdown}\n`;
+        }
+      }
+
+      return {
+        markdown,
+      };
     }),
 });

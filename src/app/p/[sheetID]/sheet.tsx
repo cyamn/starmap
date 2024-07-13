@@ -13,6 +13,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { RouterOutput } from "@/server/api/root";
 import { api } from "@/utils/api";
+import { handleDownload } from "@/utils/download";
 import { handleImport } from "@/utils/import";
 
 import Footer from "./footer";
@@ -27,16 +28,29 @@ interface SheetProperties {
   sheet: NonNullable<RouterOutput["sheets"]["get"]>;
 }
 
-const Sheet: React.FC<SheetProperties> = ({ sheet }) => {
+const Sheet: React.FC<SheetProperties> = ({ sheet: sheetPrefetched }) => {
   const context = api.useUtils();
+
+  const { data: sheetRefetched } = api.sheets.get.useQuery({
+    id: sheetPrefetched.id,
+  });
+
   const { mutate: importMd } = api.sheets.importFromMarkdown.useMutation({
     onSuccess: () => {
       void context.sheets.get.invalidate({ id: sheet.id });
     },
   });
 
+  const { mutate: exportMd } = api.sheets.exportToMarkdown.useMutation({
+    onSuccess: (data) => {
+      alert(data.markdown);
+      handleDownload(`${sheet.title}.md`, data.markdown, "text/markdown");
+    },
+  });
+
   const [dialogComponent, setDialogComponent] = useState<React.ReactNode>(null);
 
+  const sheet = sheetRefetched ?? sheetPrefetched;
   const [activePage, setActivePage] = useState(sheet.pages[0]?.index || 0);
   const pageReferences = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -92,7 +106,13 @@ const Sheet: React.FC<SheetProperties> = ({ sheet }) => {
               icon={faUpload}
             />
           </button>
-          <button>
+          <button
+            onClick={() => {
+              exportMd({
+                id: sheet.id,
+              });
+            }}
+          >
             <FontAwesomeIcon
               className="m-1 rounded-md border-2 border-primary p-1"
               icon={faDownload}
@@ -135,6 +155,7 @@ const Sheet: React.FC<SheetProperties> = ({ sheet }) => {
             lastUpdated={sheet.updatedAt}
             index={index}
             setDialogComponent={setDialogComponent}
+            sheetID={sheet.id}
           />
         </div>
       ))}

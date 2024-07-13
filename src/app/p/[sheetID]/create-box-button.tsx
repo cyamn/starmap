@@ -12,12 +12,14 @@ interface createBoxButtonProperties {
   setDialogComponent: React.Dispatch<React.SetStateAction<React.ReactNode>>;
   pageID: string;
   boxes: number;
+  sheetID: string;
 }
 
 const createBoxButton: React.FC<createBoxButtonProperties> = ({
   setDialogComponent,
   pageID,
   boxes,
+  sheetID,
 }) => {
   function closeDialog() {
     setDialogComponent(null);
@@ -25,7 +27,9 @@ const createBoxButton: React.FC<createBoxButtonProperties> = ({
 
   const { mutate: createBlock } = api.blocks.add.useMutation({
     onSuccess: (data) => {
-      setDialogComponent(<BoxEditor block={data} closeDialog={closeDialog} />);
+      setDialogComponent(
+        <BoxEditor block={data} closeDialog={closeDialog} sheetID={sheetID} />,
+      );
     },
   });
 
