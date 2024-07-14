@@ -14,7 +14,7 @@ const createSheetButton: React.FC<createSheetButtonProperties> = () => {
   });
   return (
     <button
-      className="m-5 rounded-md bg-primary p-2 text-2xl text-background"
+      className="mx-5 rounded-md bg-primary p-2 text-2xl text-background"
       onClick={() => {
         mutate();
       }}

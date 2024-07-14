@@ -116,6 +116,14 @@ export const sheetsRouter = createTRPCRouter({
           id: true,
           title: true,
           updatedAt: true,
+          pages: {
+            select: {
+              title: true,
+            },
+            orderBy: {
+              index: "asc",
+            },
+          },
         },
       });
 
