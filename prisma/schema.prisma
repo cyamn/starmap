@@ -86,18 +86,35 @@ model Page {
 }
 
 model Block {
-  id        String    @id @default(cuid())
-  index     Float     @default(0)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  type      BlockType
-  title     String
-  markdown  String
-  pageId    String
-  page      Page      @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  id            String    @id @default(cuid())
+  index         Float     @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  type          BlockType
+  title         String
+  markdown      String
+  pageId        String
+  page          Page      @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  outgoingLinks Link[]    @relation("startBlock")
+  incomingLinks Link[]    @relation("endBlock")
 
   @@index([pageId])
   @@map("Block")
+}
+
+model Link {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  // updatedAt    DateTime @updatedAt
+  value      Float
+  source     String   @map("source")
+  target     String   @map("target")
+  startBlock Block    @relation(name: "startBlock", fields: [source], references: [id], onDelete: Cascade)
+  endBlock   Block    @relation(name: "endBlock", fields: [target], references: [id], onDelete: Cascade)
+
+  @@index([source])
+  @@index([target])
+  @@map("Link")
 }
 
 enum BlockType {

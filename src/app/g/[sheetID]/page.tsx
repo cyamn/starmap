@@ -14,14 +14,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 /* eslint-disable tailwindcss/no-custom-classname */
 import Head from "next/head";
 import { getServerSession } from "next-auth";
-
-import Box from "@/app/p/[sheetID]/box";
-import BoxLabel from "@/app/p/[sheetID]/box-label";
-import { appRouter } from "@/server/api/root";
-import { authOptions } from "@/server/auth";
-import { prisma } from "@/server/database";
+import Box from "src/app/p/[sheetID]/box";
+import BoxLabel from "src/app/p/[sheetID]/box-label";
+import { appRouter } from "src/server/api/root";
+import { authOptions } from "src/server/auth";
+import { prisma } from "src/server/database";
 
 import DisplayGraph from "./graph";
+import Rebuild from "./rebuild";
 
 type PageProperties = {
   params: {
@@ -34,6 +34,7 @@ const Home = async ({ params }: PageProperties) => {
 
   const caller = appRouter.createCaller({ prisma, session });
   const sheet = await caller.sheets.get({ id: params.sheetID });
+  const graph = await caller.graph.get();
 
   if (!sheet) {
     return <div>Sheet not found</div>;
@@ -63,7 +64,7 @@ const Home = async ({ params }: PageProperties) => {
       {/* <DottedBackground /> */}
       <div className="h-full w-32 overflow-hidden">
         <div className="absolute h-full w-full overflow-hidden bg-background">
-          <DisplayGraph sheet={sheet} />
+          <DisplayGraph graph={graph} />
         </div>
         <div className="absolute left-0 z-10 flex flex-col p-2 text-primary">
           <p>seen 70%</p>
@@ -74,6 +75,7 @@ const Home = async ({ params }: PageProperties) => {
             <h1 className="border-x-8 border-primary text-center">
               Star Explorer
             </h1>
+            <Rebuild />
             <br />
             <div className="flex flex-row rounded-md border-2 border-secondary p-1">
               <button className="m-1 rounded-md border-2 border-secondary bg-secondary/25 p-1">

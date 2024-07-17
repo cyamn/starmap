@@ -4,17 +4,16 @@ import { BlockType } from "@prisma/client";
 import { extend } from "@react-three/fiber";
 import React, { useCallback, useEffect, useRef } from "react";
 import { ForceGraph3D } from "react-force-graph";
+import { RouterOutput } from "src/server/api/root";
 import * as THREE from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 
-import { RouterOutput } from "@/server/api/root";
-
 extend({ UnrealBloomPass, EffectComposer, RenderPass });
 
 interface graphProperties {
-  sheet: NonNullable<RouterOutput["sheets"]["get"]>;
+  graph: RouterOutput["graph"]["get"];
 }
 
 interface Node {
@@ -87,8 +86,8 @@ function createGraphFromSheet(
   return { nodes, links };
 }
 
-const Graph: React.FC<graphProperties> = ({ sheet }) => {
-  const data: GraphData = createGraphFromSheet(sheet);
+const Graph: React.FC<graphProperties> = ({ graph }) => {
+  const data: GraphData = graph;
 
   const fgReference = useRef<any>();
 
@@ -135,13 +134,13 @@ const Graph: React.FC<graphProperties> = ({ sheet }) => {
       nodeOpacity={1}
       graphData={data}
       nodeLabel={(node: Node) => node.name}
-      nodeColor={(node: Node) => node.color}
+      nodeColor={(node: Node) => TypeToColor[node.type]}
       linkColor={"#FF0000"}
       nodeResolution={16}
       // numDimensions={2}
-      linkDirectionalParticles="value"
-      linkDirectionalParticleWidth={(d) => d.value * 0.5}
-      linkDirectionalParticleSpeed={(d) => d.value * 0.001}
+      // linkDirectionalParticles="value"
+      // linkDirectionalParticleWidth={2 * 0.5}
+      // linkDirectionalParticleSpeed={(d) => d.value * 0.0001}
       enableNodeDrag={false}
       onNodeRightClick={handleClick}
       nodeVal={(node: Node) => node.value}

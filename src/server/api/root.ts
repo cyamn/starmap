@@ -3,6 +3,7 @@ import { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 import { createTRPCRouter } from "@/server/api/trpc";
 
 import { blocksRouter } from "./routers/blocks/router";
+import { graphRouter } from "./routers/graph/router";
 import { pagesRouter } from "./routers/pages/router";
 import { sheetsRouter } from "./routers/sheets/router";
 
@@ -15,6 +16,7 @@ export const appRouter = createTRPCRouter({
   sheets: sheetsRouter,
   pages: pagesRouter,
   blocks: blocksRouter,
+  graph: graphRouter,
 });
 
 // export type definition of API
