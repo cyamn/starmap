@@ -57,7 +57,7 @@ function cosineSimilarity(matrix: number[][]): number[][] {
   return similarities;
 }
 
-async function getDocs() {
+async function fetchAllDocuments() {
   // get all blocks
   const blocks = await prisma.block.findMany({
     select: {
@@ -89,7 +89,7 @@ async function getDocs() {
   return { documentIds, documents };
 }
 
-const proxTreshold = 0;
+const proxThreshold = 0;
 
 function valueFromSimilarity(similarity: number): number {
   return similarity ** 4;
@@ -99,17 +99,17 @@ function valueFromSimilarity(similarity: number): number {
 const maxLinkSumPerNode = 1.5;
 const maxLinksPerNode = 5;
 
-function calculateLinksFromSimilarities(documentIds, similarities) {
+function calculateLinksFromSimilarities(documentIds: string[], similarities: number[][]): Link[] {
   const links: Link[] = [];
   for (let index = 0; index < documentIds.length; index++) {
     const nodeLinks = [];
-    // add all links with similarity > proxTreshold
+    // add all links with similarity > proxThreshold
     for (let index_ = index + 1; index_ < documentIds.length; index_++) {
-      if (similarities[index][index_] > proxTreshold) {
+      if (similarities[index]![index_] !== undefined && similarities[index]![index_]! > proxThreshold) {
         nodeLinks.push({
-          source: documentIds[index],
-          target: documentIds[index_],
-          value: valueFromSimilarity(similarities[index][index_]),
+          source: documentIds[index]!,
+          target: documentIds[index_]!,
+          value: valueFromSimilarity(similarities[index]![index_]!),
         });
       }
     }
@@ -134,8 +134,8 @@ function calculateLinksFromSimilarities(documentIds, similarities) {
 
 
 export async function rebuildGraph() {
-  const { documentIds, documents } = await getDocs();
-  const preprocessDocuments = documents.map(preprocessDocument);
+  const { documentIds, documents } = await fetchAllDocuments();
+  const preprocessDocuments = documents.map((element) => preprocessDocument(element));
   const documentTermMatrix = termFrequency(preprocessDocuments);
   const similarities = cosineSimilarity(documentTermMatrix);
 

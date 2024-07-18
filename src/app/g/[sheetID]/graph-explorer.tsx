@@ -23,39 +23,26 @@ import { getNearestNeighbors, Neighbor } from "./neighbors";
 import Rebuild from "./rebuild";
 
 interface GraphExplorerProperties {
-  sheet: NonNullable<RouterOutput["sheets"]["get"]>;
   graph: RouterOutput["graph"]["get"];
 }
 
-const GraphExplorer: React.FC<GraphExplorerProperties> = ({ sheet, graph }) => {
+const GraphExplorer: React.FC<GraphExplorerProperties> = ({ graph }) => {
   const [blockId, setBlockId] = React.useState<string | null>(null);
-
-  // const childReference = useRef(
-  //   <DisplayGraph graph={graph} setBlockId={setBlockId} />,
-  // );
 
   const childReference = useRef();
   const childComponent = useRef(
+    // @ts-expect-error the ref object is correct
     <DisplayGraph graph={graph} setBlockId={setBlockId} ref={childReference} />,
   );
 
   function focusNodeId(id: string) {
     setBlockId(id);
-    childReference.current.focusNodeById(id);
+    const graphComponent = childReference.current;
+    // @ts-expect-error the ref object is correct
+    if (graphComponent !== undefined) graphComponent.focusNodeById(id);
   }
 
-  const dummySheetTitles = [
-    "Sheet 1",
-    "Sheet 2",
-    "Sheet 3",
-    "Sheet 4",
-    "Sheet 5",
-    "Sheet 6",
-    "Sheet 7",
-    "Sheet 8",
-    "Sheet 9",
-    "Sheet 10",
-  ];
+  const dummySheetTitles = ["S1", "S2"];
 
   return (
     <>
@@ -67,7 +54,7 @@ const GraphExplorer: React.FC<GraphExplorerProperties> = ({ sheet, graph }) => {
         <p>known 34%</p>
       </div>
       {/* draw + in center of screen as scope */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 z-30 -translate-x-4 -translate-y-6 text-5xl font-thin text-secondary">
+      <div className="pointer-events-none absolute left-1/2 top-1/2 z-30 -translate-x-4 -translate-y-6 text-5xl font-thin text-secondary">
         +
       </div>
       <div className="absolute right-0 z-10 h-full w-[600px] border-l-2 border-secondary bg-background/95 pr-10">
@@ -158,7 +145,7 @@ const BlockPreview: React.FC<BlockPreviewProperties> = ({
           icon={faRocket}
         />
         <p>Cruising in:</p>
-        <p className="border-md ml-3 rounded-md bg-primary p-1 text-background">
+        <p className="ml-3 rounded-md bg-primary p-1 text-background">
           {block.page.sheet.title}
         </p>
       </h2>
@@ -173,9 +160,6 @@ const BlockPreview: React.FC<BlockPreviewProperties> = ({
         <p>In proximity:</p>
       </h2>
       <div className="flex flex-col gap-2 overflow-scroll rounded-md border-2 border-secondary p-2">
-        {/* {blocks.slice(1, 8).map((block) => (
-          <BoxLabel key={block.id} title={block.title} type={block.type} />
-        ))} */}
         {neighbors.map((neighbor) => (
           <div
             className="cursor-pointer"
@@ -195,11 +179,7 @@ const BlockPreview: React.FC<BlockPreviewProperties> = ({
         <FontAwesomeIcon icon={faInfinity} />
         <p>Outbound:</p>
       </h2>
-      <div className="flex max-h-64 flex-col gap-2 overflow-scroll rounded-md border-2 border-secondary p-2">
-        {/* {blocks.slice(9, 16).map((block) => (
-          <BoxLabel key={block.id} title={block.title} type={block.type} />
-        ))} */}
-      </div>
+      <div className="flex max-h-64 flex-col gap-2 overflow-scroll rounded-md border-2 border-secondary p-2"></div>
     </>
   );
 };

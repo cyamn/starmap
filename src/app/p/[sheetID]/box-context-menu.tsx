@@ -44,6 +44,7 @@ const box: React.FC<boxProperties> = ({
           title,
           markdown,
           type,
+          index: 0,
         }}
         closeDialog={closeDialog}
         sheetID={sheetID}

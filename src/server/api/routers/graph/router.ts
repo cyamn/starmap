@@ -15,7 +15,7 @@ export const graphRouter = createTRPCRouter({
         path: "/graph",
       },
     })
-    .query(async ({ ctx }) => {
+    .query(async () => {
       return await getGraph();
     }),
 
@@ -28,7 +28,7 @@ export const graphRouter = createTRPCRouter({
         path: "/graph/rebuild",
       },
     })
-    .mutation(async ({ ctx }) => {
+    .mutation(async () => {
       console.log("Rebuilding graph.....");
       await rebuildGraph();
     }),

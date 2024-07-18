@@ -62,7 +62,7 @@ const Sheet: React.FC<SheetProperties> = ({ sheet: sheetPrefetched }) => {
       );
 
       for (let index = offsets.length - 1; index >= 0; index--) {
-        if (scrollPosition >= offsets[index]) {
+        if (offsets[index] !== undefined && scrollPosition >= offsets[index]!) {
           setActivePage(sheet.pages[index]?.index ?? 0);
           console.log(sheet.pages[index]?.index ?? 0);
           break;

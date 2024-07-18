@@ -19,12 +19,7 @@ const Home = async ({ params }: PageProperties) => {
   const session = await getServerSession(authOptions);
 
   const caller = appRouter.createCaller({ prisma, session });
-  const sheet = await caller.sheets.get({ id: params.sheetID });
   const graph = await caller.graph.get();
-
-  if (!sheet) {
-    return <div>Sheet not found</div>;
-  }
 
   return (
     <>
@@ -35,7 +30,7 @@ const Home = async ({ params }: PageProperties) => {
       </Head>
       {/* <DottedBackground /> */}
       <div className="h-full w-32 overflow-hidden">
-        <GraphExplorer sheet={sheet} graph={graph} />
+        <GraphExplorer graph={graph} />
       </div>
     </>
   );
