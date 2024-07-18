@@ -2,7 +2,13 @@
 
 import { BlockType } from "@prisma/client";
 import { extend } from "@react-three/fiber";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import { ForceGraph3D } from "react-force-graph";
 import { RouterOutput } from "src/server/api/root";
 import * as THREE from "three";
@@ -14,6 +20,7 @@ extend({ UnrealBloomPass, EffectComposer, RenderPass });
 
 interface graphProperties {
   graph: RouterOutput["graph"]["get"];
+  setBlockId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 interface Node {
@@ -43,56 +50,25 @@ const TypeToColor = {
   [BlockType.ERROR]: "#FC6DAB",
 };
 
-function createGraphFromSheet(
-  sheet: NonNullable<RouterOutput["sheets"]["get"]>,
-): GraphData {
-  const nodes: Node[] = sheet.pages.flatMap((page) =>
-    page.blocks.map((block) => ({
-      id: block.id,
-      name: block.title,
-      color: TypeToColor[block.type],
-      value: 1,
-    })),
-  );
+const Graph = forwardRef<{ handleClick: () => void }, graphProperties>(
+  ({ graph, setBlockId }, reference) => {
+    // !If we don't create a deep copy, the origninal graph will be overwritten and break typesafety
+    const data: GraphData = JSON.parse(JSON.stringify(graph)) as GraphData;
 
-  const rootNode = {
-    id: "root",
-    name: sheet.title,
-    color: "hsl(250, 60%, 60%)",
-    value: 12,
-  };
+    const fgReference = useRef<any>();
 
-  nodes.push(rootNode);
+    useImperativeHandle(reference, () => ({
+      focusNodeById,
+    }));
 
-  // Link the path through the blocks in a page
-  const links: Link[] = sheet.pages.flatMap((page) => {
-    const blocks = page.blocks;
-    const links: Link[] = [];
-    links.push({
-      source: rootNode.id,
-      target: blocks[0].id,
-      value: 4,
-    });
-    for (let index = 0; index < blocks.length - 1; index++) {
-      links.push({
-        source: blocks[index].id,
-        target: blocks[index + 1].id,
-        value: 4,
-      });
+    function focusNodeById(id: string) {
+      const node = data.nodes.find((node) => node.id === id);
+      if (node) {
+        focusNode(node);
+      }
     }
-    return links;
-  });
 
-  return { nodes, links };
-}
-
-const Graph: React.FC<graphProperties> = ({ graph }) => {
-  const data: GraphData = graph;
-
-  const fgReference = useRef<any>();
-
-  const handleClick = useCallback(
-    (node) => {
+    function focusNode(node) {
       // Aim at node from outside it
       const distance = 120;
       const distributionRatio =
@@ -107,45 +83,55 @@ const Graph: React.FC<graphProperties> = ({ graph }) => {
         node, // lookAt ({ x, y, z })
         1000, // ms transition duration
       );
-    },
-    [fgReference],
-  );
-
-  useEffect(() => {
-    if (fgReference.current) {
-      // Create resolution vector
-      const resolution = new THREE.Vector2(
-        window.innerWidth,
-        window.innerHeight,
-      );
-
-      // Create UnrealBloomPass with required arguments
-      const bloomPass = new UnrealBloomPass(resolution, 0.15, 0.5, 0.1);
-
-      // Get the post-processing composer and add the bloom pass
-      const composer = fgReference.current.postProcessingComposer();
-      composer.addPass(bloomPass);
+      setBlockId(node.id);
     }
-  }, [fgReference]);
-  return (
-    <ForceGraph3D
-      ref={fgReference}
-      backgroundColor="#000001"
-      nodeOpacity={1}
-      graphData={data}
-      nodeLabel={(node: Node) => node.name}
-      nodeColor={(node: Node) => TypeToColor[node.type]}
-      linkColor={"#FF0000"}
-      nodeResolution={16}
-      // numDimensions={2}
-      // linkDirectionalParticles="value"
-      // linkDirectionalParticleWidth={2 * 0.5}
-      // linkDirectionalParticleSpeed={(d) => d.value * 0.0001}
-      enableNodeDrag={false}
-      onNodeRightClick={handleClick}
-      nodeVal={(node: Node) => node.value}
-    />
-  );
-};
+
+    const handleClick = useCallback(
+      (node) => {
+        focusNode(node);
+      },
+      [fgReference],
+    );
+
+    useEffect(() => {
+      if (fgReference.current) {
+        // Create resolution vector
+        const resolution = new THREE.Vector2(
+          window.innerWidth,
+          window.innerHeight,
+        );
+
+        // Create UnrealBloomPass with required arguments
+        const bloomPass = new UnrealBloomPass(resolution, 0.1, 0.5, 0.1);
+
+        // Get the post-processing composer and add the bloom pass
+        const composer = fgReference.current.postProcessingComposer();
+        composer.addPass(bloomPass);
+      }
+    }, [fgReference]);
+    return (
+      <ForceGraph3D
+        ref={fgReference}
+        backgroundColor="#000001"
+        nodeOpacity={1}
+        graphData={data}
+        nodeLabel={(node: Node) => node.name}
+        nodeColor={(node: Node) => TypeToColor[node.type]}
+        nodeRelSize={3}
+        linkColor={"#FF0000"}
+        nodeResolution={16}
+        // numDimensions={2}
+        // linkDirectionalParticles="value"
+        // linkDirectionalParticleWidth={2 * 0.5}
+        // linkDirectionalParticleSpeed={(d) => d.value * 0.0001}
+        //linkDirectionalArrowLength={(link: Link) => link.value}
+        linkLabel={(link: Link) => link.value}
+        enableNodeDrag={false}
+        onNodeRightClick={handleClick}
+        nodeVal={(node: Node) => node.value}
+      />
+    );
+  },
+);
 
 export default Graph;

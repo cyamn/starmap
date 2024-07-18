@@ -110,4 +110,43 @@ export const blocksRouter = createTRPCRouter({
 
       return block;
     }),
+
+  get: publicProcedure
+    .meta({
+      openapi: {
+        description: "Get a block",
+        tags: ["block"],
+        method: "GET",
+        path: "/block/:id",
+      },
+    })
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const block = await ctx.prisma.block.findUnique({
+        where: {
+          id: input.id,
+        },
+        select: {
+          id: true,
+          title: true,
+          markdown: true,
+          type: true,
+          page: {
+            select: {
+              sheet: {
+                select: {
+                  title: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!block) {
+        throw new NotFoundError("Block");
+      }
+
+      return block;
+    }),
 });
