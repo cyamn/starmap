@@ -6,6 +6,7 @@ import { createTRPCRouter } from "@/server/api/trpc";
 import { publicProcedure } from "@/server/api/trpc";
 import { normalizeMarkdown } from "@/utils/normalize-markdown";
 
+import { sheetToMarkdown } from "../../../../utils/export-markdown";
 import { NotFoundError } from "../shared/errors";
 
 export const sheetsRouter = createTRPCRouter({
@@ -305,39 +306,7 @@ export const sheetsRouter = createTRPCRouter({
         throw new NotFoundError("Sheet");
       }
 
-      let markdown = "";
-
-      for (const page of sheet.pages) {
-        markdown += `# ${page.title}\n\n`;
-
-        for (const block of page.blocks) {
-          let type = "";
-          switch (block.type) {
-            case BlockType.INFO: {
-              type = ".";
-              break;
-            }
-            case BlockType.HINT: {
-              type = "?";
-              break;
-            }
-            case BlockType.WARNING: {
-              type = "!";
-              break;
-            }
-            case BlockType.ERROR: {
-              type = "$";
-              break;
-            }
-            default: {
-              type = "";
-              break;
-            }
-          }
-
-          markdown += `## ${block.title}${type}\n${block.markdown}\n`;
-        }
-      }
+      const markdown = sheetToMarkdown(sheet);
 
       return {
         markdown,
