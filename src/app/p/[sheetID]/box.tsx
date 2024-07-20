@@ -22,7 +22,7 @@ const TypeToBackgroundTransparentColor = {
   [BlockType.ERROR]: "bg-danger/5",
 };
 
-const TypeToBorderColor = {
+export const TypeToBorderColor = {
   [BlockType.DEFAULT]: "border-primary",
   [BlockType.INFO]: "border-info",
   [BlockType.HINT]: "border-success",

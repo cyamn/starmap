@@ -28,7 +28,7 @@ interface boxEditorProperties {
   sheetID: string;
 }
 
-const TypeToColor = {
+export const TypeToColor = {
   [BlockType.DEFAULT]: "text-primary",
   [BlockType.INFO]: "text-info",
   [BlockType.HINT]: "text-success",

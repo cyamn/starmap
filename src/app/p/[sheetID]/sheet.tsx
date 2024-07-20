@@ -128,12 +128,14 @@ const Sheet: React.FC<SheetProperties> = ({ sheet: sheetPrefetched }) => {
               icon={faPrint}
             />
           </button>
-          <button>
-            <FontAwesomeIcon
-              className="m-1 rounded-md border-2 border-primary p-1"
-              icon={faPersonChalkboard}
-            />
-          </button>
+          <a href={`/p/${sheet.id}/p`}>
+            <button>
+              <FontAwesomeIcon
+                className="m-1 rounded-md border-2 border-primary p-1"
+                icon={faPersonChalkboard}
+              />
+            </button>
+          </a>
         </div>
         <SheetSidenav pages={sheet.pages} activePage={activePage} />
       </div>
