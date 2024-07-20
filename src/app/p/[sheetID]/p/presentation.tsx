@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import QRCode from "react-qr-code";
 
 import MarkdownWithMath from "@/components/markdown-with-math";
 import { cn } from "@/lib/utils";
@@ -70,7 +71,11 @@ const Presentation: React.FC<PresentationProperties> = ({ sheet: sheet_ }) => {
       className="flex h-full w-full flex-col items-center justify-center"
       tabIndex={0}
     >
-      <PresentationContent sheet={sheet} activeBlock={activeBlock} />
+      <PresentationContent
+        sheet={sheet}
+        activeBlock={activeBlock}
+        blockCount={blockCount}
+      />
       <div className="absolute bottom-0 w-full flex-row">
         <div
           style={{ width: `${loadingBarPercentage}%` }}
@@ -87,6 +92,7 @@ const Presentation: React.FC<PresentationProperties> = ({ sheet: sheet_ }) => {
 interface PresentationProperties {
   sheet: NonNullable<RouterOutput["sheets"]["get"]>;
   activeBlock: number;
+  blockCount: number;
 }
 
 function getActivePageAndBlock(
@@ -108,6 +114,7 @@ function getActivePageAndBlock(
 const PresentationContent: React.FC<PresentationProperties> = ({
   sheet,
   activeBlock,
+  blockCount,
 }) => {
   if (activeBlock === -1) {
     return (
@@ -115,6 +122,30 @@ const PresentationContent: React.FC<PresentationProperties> = ({
         <h1 className="m-8 border-x-8 border-primary px-4 text-center text-7xl font-bold text-primary">
           {sheet.title}
         </h1>
+      </div>
+    );
+  }
+
+  if (activeBlock === blockCount) {
+    return (
+      <div className="flex w-96 flex-col items-center p-2 backdrop-blur-sm">
+        <h1 className="m-8 border-x-8 border-primary px-4 text-center text-7xl font-bold text-primary">
+          Fin
+        </h1>
+        <QRCode
+          size={256}
+          value={window.location.hostname + "/p/" + sheet.id}
+          viewBox={`0 0 256 256`}
+          bgColor="#060410"
+          fgColor="hsl(201, 65%, 88%)"
+        />
+        <p className="p-8 text-center text-primary">
+          Visit{" "}
+          <a className="text-info" href="">
+            {window.location.hostname + "/p/" + sheet.id}
+          </a>{" "}
+          to download a cheat sheet of this presentation and more.
+        </p>
       </div>
     );
   }
