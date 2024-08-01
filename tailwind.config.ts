@@ -1,3 +1,5 @@
+import { DEFAULT } from "@react-three/fiber/dist/declarations/src/core/utils";
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -29,6 +31,10 @@ module.exports = {
         secondary: {
           DEFAULT: "hsl(250, 60%, 40%)",
           foreground: "hsl(var(--secondary-foreground))",
+        },
+        purple: {
+          DEFAULT: "#8578c4",
+          foreground: "hsl(var(--purple-foreground))",
         },
         info: {
           DEFAULT: "#52A7E0",

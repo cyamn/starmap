@@ -1,4 +1,5 @@
-import { BlockType } from "@prisma/client";
+/* eslint-disable max-lines */
+import { BlockType, QuestionCard } from "@prisma/client";
 import cuid from "cuid";
 import { z } from "zod";
 
@@ -312,4 +313,34 @@ export const sheetsRouter = createTRPCRouter({
         markdown,
       };
     }),
+
+  getQuestions: publicProcedure
+    .meta({
+      openapi: {
+        description: "Get questions from a sheet",
+        tags: ["sheet"],
+        method: "GET",
+        path: "/sheet/questions/:id",
+      },
+    })
+    .input(z.object({ id: z.string() }))
+    .output(z.array(z.object({ question: z.string(), answer: z.string() })))
+    .query(async ({ input, ctx }) => {
+      const questions: QuestionCard[] = await ctx.prisma.questionCard.findMany({
+        where: {
+          block: {
+            page: {
+              sheetId: input.id,
+            },
+          },
+        },
+      });
+
+      if (questions === undefined || questions === null) {
+        throw new NotFoundError("Questions");
+      }
+
+      return questions;
+    }),
 });
+/* eslint-enable max-lines */

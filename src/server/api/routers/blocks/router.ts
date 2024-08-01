@@ -1,4 +1,4 @@
-import { BlockType } from "@prisma/client";
+import { BlockType, QuestionCard } from "@prisma/client";
 import { z } from "zod";
 
 import { createTRPCRouter } from "@/server/api/trpc";
@@ -148,5 +148,30 @@ export const blocksRouter = createTRPCRouter({
       }
 
       return block;
+    }),
+
+  getQuestions: publicProcedure
+    .meta({
+      openapi: {
+        description: "Get questions from a block",
+        tags: ["block"],
+        method: "GET",
+        path: "/block/questions/:id",
+      },
+    })
+    .input(z.object({ id: z.string() }))
+    .output(z.array(z.object({ question: z.string(), answer: z.string() })))
+    .query(async ({ input, ctx }) => {
+      const questions: QuestionCard[] = await ctx.prisma.questionCard.findMany({
+        where: {
+          blockId: input.id,
+        },
+      });
+
+      if (questions === undefined || questions === null) {
+        throw new NotFoundError("Questions");
+      }
+
+      return questions;
     }),
 });

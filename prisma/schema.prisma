@@ -86,20 +86,29 @@ model Page {
 }
 
 model Block {
-  id            String    @id @default(cuid())
-  index         Float     @default(0)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id            String         @id @default(cuid())
+  index         Float          @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   type          BlockType
   title         String
   markdown      String
   pageId        String
-  page          Page      @relation(fields: [pageId], references: [id], onDelete: Cascade)
-  outgoingLinks Link[]    @relation("startBlock")
-  incomingLinks Link[]    @relation("endBlock")
+  page          Page           @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  outgoingLinks Link[]         @relation("startBlock")
+  incomingLinks Link[]         @relation("endBlock")
+  questionCards QuestionCard[]
 
   @@index([pageId])
   @@map("Block")
+}
+
+model QuestionCard {
+  id       String @id @default(cuid())
+  question String
+  answer   String
+  blockId  String
+  block    Block  @relation(fields: [blockId], references: [id], onDelete: Cascade)
 }
 
 model Link {
