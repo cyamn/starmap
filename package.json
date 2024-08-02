@@ -88,6 +88,7 @@
     "react-qr-code": "^2.0.15",
     "react-three-fiber": "^6.0.13",
     "reactflow": "^11.10.3",
+    "recharts": "^2.12.7",
     "rehype-katex": "^7.0.0",
     "remark-math": "^6.0.0",
     "stopword": "^3.0.1",
