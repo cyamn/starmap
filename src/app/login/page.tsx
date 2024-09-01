@@ -2,13 +2,17 @@ import Head from "next/head";
 import { getServerSession } from "next-auth";
 
 import { DottedBackground } from "@/components/dotted-background";
+import { appRouter } from "@/server/api/root";
 import { authOptions } from "@/server/auth";
+import { prisma } from "@/server/database";
 
-import Flashcards from "./flashcards";
-import Profile from "./profile";
+import Login from "./login";
 
 const Home = async () => {
   const session = await getServerSession(authOptions);
+
+  const caller = appRouter.createCaller({ prisma, session });
+  const sheets = await caller.sheets.list({});
 
   return (
     <>
@@ -18,10 +22,12 @@ const Home = async () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <DottedBackground />
-      <div className="h-full overflow-auto">
-        <div className="mt-10 flex flex-col items-center justify-center gap-8 px-32 py-2 text-primary">
-          <Profile user={session!.user ?? null} />
-          <Flashcards />
+      <div className="overflow-auto">
+        <div className="mt-10 flex flex-col items-center justify-center gap-8 py-2 text-primary">
+          <h1 className="border-x-8 border-primary px-4 text-5xl font-bold">
+            Login
+          </h1>
+          <Login />
         </div>
       </div>
     </>

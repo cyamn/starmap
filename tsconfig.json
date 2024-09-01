@@ -40,6 +40,6 @@
     "next.config.js",
     "src/pages/api/jscpd.js",
     "src/server/api/routers/sheets/router.ts.off"
-  ],
+, "src/app/register/page.tsx.off"  ],
   "exclude": ["node_modules"]
 }

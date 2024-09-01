@@ -79,16 +79,19 @@ export const authOptions: NextAuthOptions = {
           placeholder: "mail@example.com",
         },
         password: { label: "Password", type: "password" },
+        otp: { label: "OTP", type: "text" },
       },
       async authorize(credentials) {
         // Add logic here to look up the user from the credentials supplied
         const user = await prisma.user.findUnique({
           where: { email: credentials?.email },
+          include: { otp: true },
         });
 
         if (
           credentials?.email === undefined ||
-          credentials?.password === undefined
+          credentials?.password === undefined ||
+          credentials?.otp === undefined
         )
           return null;
 
@@ -96,17 +99,11 @@ export const authOptions: NextAuthOptions = {
         if (user) {
           if (user.password === null) return null;
           const validPassword = await bcrypt.compare(password, user.password);
-          return validPassword ? user : null;
+          const validOtp = await bcrypt.compare(credentials.otp, user.otp!.otp ?? "");
+          const optNotOutdated = user.otp !== null && user.otp.expires > new Date();
+          return validPassword && validOtp && optNotOutdated ? user : null;
         } else {
-          //  create user and return
-          const newUser = await prisma.user.create({
-            data: {
-              name: credentials?.email.split("@")[0],
-              email: credentials?.email,
-              password: await bcrypt.hash(password, 10),
-            },
-          });
-          return newUser;
+          return null;
         }
       },
     }),

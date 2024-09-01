@@ -46,7 +46,7 @@ export default function Component() {
   return (
     <Card className="w-full border-secondary bg-secondary/25 text-primary backdrop-blur-sm">
       <CardHeader className="h-24">
-        <CardTitle>You're Being productive</CardTitle>
+        <CardTitle>You're Study History</CardTitle>
         <CardDescription>
           Perfect! You are meeting your learning goals.
         </CardDescription>

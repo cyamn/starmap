@@ -45,9 +45,18 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
+  otp           OTP?
   accounts      Account[]
   sessions      Session[]
   projects      Sheet[]
+}
+
+model OTP {
+  id      String   @id @default(cuid())
+  otp     String
+  expires DateTime
+  userId  String   @unique
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {

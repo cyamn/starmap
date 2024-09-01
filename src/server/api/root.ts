@@ -8,6 +8,7 @@ import { emailRouter } from "./routers/email/router";
 import { graphRouter } from "./routers/graph/router";
 import { pagesRouter } from "./routers/pages/router";
 import { sheetsRouter } from "./routers/sheets/router";
+import { userRouter } from "./routers/user/router";
 
 /**
  * This is the primary router for your server.
@@ -21,6 +22,7 @@ export const appRouter = createTRPCRouter({
   graph: graphRouter,
   email: emailRouter,
   ai: aiRouter,
+  user: userRouter,
 });
 
 // export type definition of API
