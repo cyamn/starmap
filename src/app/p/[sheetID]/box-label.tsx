@@ -38,12 +38,12 @@ const boxLabel: React.FC<boxLabelProperties> = ({ title, type }) => {
   return (
     <h3
       className={cn(
-        "border-md rounded-md bg-primary px-1 text-base text-background print:text-sm",
+        "border-md flex shrink-0 flex-row items-center rounded-md bg-primary px-1 text-base text-background print:text-sm",
         bgColor,
       )}
     >
       <FontAwesomeIcon className="pr-1" icon={icon} />
-      <span>{title}</span>
+      <span className="whitespace-nowrap">{title}</span>
     </h3>
   );
 };

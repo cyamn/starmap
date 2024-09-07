@@ -42,7 +42,7 @@ interface GraphData {
   links: Link[];
 }
 
-const TypeToColor = {
+export const TypeToColor = {
   [BlockType.DEFAULT]: "hsl(201, 65%, 88%)",
   [BlockType.INFO]: "#52A7E0",
   [BlockType.HINT]: "#70EE9C",

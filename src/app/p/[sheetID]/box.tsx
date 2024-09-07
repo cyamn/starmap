@@ -35,12 +35,15 @@ const box: React.FC<boxProperties> = ({ title, markdown, type, id }) => {
   return (
     <div
       className={cn(
-        "text-md w-full rounded-md border-2 p-1 backdrop-blur-sm print:text-xs",
+        "text-md w-full rounded-md border-2 p-1 text-primary backdrop-blur-sm print:text-xs",
         bgColorTransparent,
         borderColor,
       )}
     >
       <div id={id} className="fixed -translate-x-1 -translate-y-4">
+        <BoxLabel title={title} type={type} />
+      </div>
+      <div id={id} className="invisible h-0 -translate-x-1 -translate-y-4">
         <BoxLabel title={title} type={type} />
       </div>
       <div className="pt-3">

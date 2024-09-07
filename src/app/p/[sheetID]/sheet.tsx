@@ -43,7 +43,6 @@ const Sheet: React.FC<SheetProperties> = ({ sheet: sheetPrefetched }) => {
 
   const { mutate: exportMd } = api.sheets.exportToMarkdown.useMutation({
     onSuccess: (data) => {
-      alert(data.markdown);
       handleDownload(`${sheet.title}.md`, data.markdown, "text/markdown");
     },
   });
